@@ -135,6 +135,11 @@ proc initCallback(grifola: Grifola): Grifola =
     let dialog = newOpenFileDialog()
     dialog.title = "Open a image file"
     dialog.multiple = false
+
+    let currentFilePath = grifola.textBoxFilePath.text
+    if currentFilePath != "" and currentFilePath.fileExists():
+      dialog.directory = currentFilePath.parentDir()
+
     dialog.run()
 
     if dialog.files.len > 0:
