@@ -40,10 +40,10 @@ proc newImageView(image: nigui.Image, width, height: int): ImageView =
   let imageView = ImageView(image: image)
   imageView.init()
 
-  imageView.width = width
-  imageView.height = height
+  imageView.width = width.scaleToDpi
+  imageView.height = height.scaleToDpi
 
-  imageView.image.resize(width, height)
+  imageView.image.resize(width.scaleToDpi, height.scaleToDpi)
   imageView.image.canvas.areaColor = rgb(0, 0, 0, 0)
 
   imageView
@@ -84,10 +84,10 @@ proc setImage(grifola: Grifola, filePath: string) =
     let
       source = res.get()
 
-    grifola.imageView.width = source.width
-    grifola.imageView.height = source.height
+    grifola.imageView.width = source.width.scaleToDpi
+    grifola.imageView.height = source.height.scaleToDpi
 
-    grifola.imageView.image.resize(source.width, source.height)
+    grifola.imageView.image.resize(source.width.scaleToDpi, source.height.scaleToDpi)
     grifola.imageView.image.canvas.drawPixels(source)
     grifola.imageView.forceRedraw()
 
