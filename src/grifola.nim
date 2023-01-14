@@ -28,6 +28,7 @@ type
 
 method handleDrawEvent(self: ImageView, event: DrawEvent) =
   let canvas = event.control.canvas
+  canvas.fill()
   canvas.drawImage(self.image, 0, 0, self.width.scaleToDpi, self.height.scaleToDpi)
 
 
@@ -39,10 +40,11 @@ proc newImageView(image: nigui.Image, width, height: int): ImageView =
   let imageView = ImageView(image: image)
   imageView.init()
 
-  imageView.width = width.scaleToDpi
-  imageView.height = height.scaleToDpi
+  imageView.width = width
+  imageView.height = height
 
   imageView.image.resize(width, height)
+  imageView.image.canvas.areaColor = rgb(0, 0, 0, 0)
 
   imageView
 
@@ -87,6 +89,7 @@ proc setImage(grifola: Grifola, filePath: string) =
 
     grifola.imageView.image.resize(source.width, source.height)
     grifola.imageView.image.canvas.drawPixels(source)
+    grifola.imageView.forceRedraw()
 
     echo "Set image"
   else:
@@ -119,12 +122,25 @@ proc initLayout(grifola: Grifola): Grifola =
 
 
 proc initCallback(grifola: Grifola): Grifola =
+  grifola.window.onKeyDown = proc(event: KeyboardEvent) =
+    if Key_Escape.isDown():
+      app.quit()
+
   grifola.textBoxFilePath.onKeyDown = proc(event: KeyboardEvent) =
     if Key_Return.isDown():
       let filePath = grifola.textBoxFilePath.text
       grifola.setImage(filePath)
-    elif Key_Escape.isDown():
-      app.quit()
+
+  grifola.buttonFileBrowse.onClick = proc(event: ClickEvent) =
+    let dialog = newOpenFileDialog()
+    dialog.title = "Open a image file"
+    dialog.multiple = false
+    dialog.run()
+
+    if dialog.files.len > 0:
+      let filePath = dialog.files[0]
+      grifola.textBoxFilePath.text = filePath
+      grifola.setImage(filePath)
 
   grifola
 
