@@ -8,7 +8,7 @@ import pixie
 
 const
   toolName = "Grifola"
-  toolVersion = "0.1.0"
+  toolVersion = "0.2.0"
 
 
 type
@@ -22,6 +22,7 @@ type
     textBoxFilePath: TextBox
     buttonFileBrowse: Button
     buttonHelp: Button
+    buttonConvert: Button
 
   Grifola = ref GrifolaObj
 
@@ -114,6 +115,7 @@ proc initLayout(grifola: Grifola): Grifola =
   vContainer.add(hContainerFilePath)
 
   hContainerButtonBox.add(grifola.buttonHelp)
+  hContainerButtonBox.add(grifola.buttonConvert)
   vContainer.add(hContainerButtonBox)
 
   grifola.window.add(vContainer)
@@ -147,6 +149,19 @@ proc initCallback(grifola: Grifola): Grifola =
       grifola.textBoxFilePath.text = filePath
       grifola.setImage(filePath)
 
+  grifola.buttonConvert.onClick = proc(event: ClickEvent) =
+      let
+        inputFilePath = grifola.textBoxFilePath.text
+        outputFilePath = inputFilePath.changeFileExt("png")
+        res = inputFilePath.openImage()
+      
+      if res.isSome():
+        let image: pixie.common.Image = res.get()
+        image.writeFile(outputFilePath)
+      else:
+        let errorMessage = fmt"Invalid file path: {inputFilePath}"
+        grifola.window.alert(errorMessage)
+
   grifola
 
 
@@ -163,7 +178,8 @@ proc main(): cint =
     labelFilePath: newLabel("File Path"),
     textBoxFilePath: newTextBox(""),
     buttonFileBrowse: newButton("..."),
-    buttonHelp: newButton("Help")
+    buttonHelp: newButton("Help"),
+    buttonConvert: newButton("Convert")
   )
   .initLayout()
   .initCallback()
