@@ -10,6 +10,13 @@ bin           = @["grifola"]
 
 # Dependencies
 
-requires "nim >= 1.6.10"
+requires "nim >= 1.6.8"
 requires "nigui >= 0.2.6"
 requires "pixie >= 5.0.5"
+
+
+# Tasks
+
+task release, "release build":
+  let command = "nimble build -d:release --mm:orc"
+  exec command
